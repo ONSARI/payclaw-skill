@@ -1,6 +1,6 @@
 {
-  "name": "payclaw",
-  "version": "0.1.1",
+  "name": "@grip-labs/payclaw",
+  "version": "0.1.2",
   "description": "Give your agent a wallet it can actually spend. USDC-native on Base L2. 1% flat, no KYC, no custody. Hardened: daily spending cap + EOA-only fee recipient + optional recipient whitelist + provenance attestation.",
   "type": "module",
   "main": "./dist/index.js",

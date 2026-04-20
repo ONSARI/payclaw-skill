@@ -6,7 +6,7 @@
 An [OpenClaw](https://openclaw.io) skill that gives autonomous agents the simplest possible way to send money. Three functions, auto-provisioned wallet, on-chain settlement.
 
 ```js
-import { pay } from 'payclaw'
+import { pay } from '@grip-labs/payclaw'
 
 await pay({
   to:     '0xRecipient...',
@@ -61,10 +61,10 @@ PayClaw is **1% flat, no fixed fee, no monthly minimum**. On a $0.31 tx, you pay
 
 ```bash
 # In your OpenClaw workspace
-openclaw plugin add payclaw
+openclaw plugin add @grip-labs/payclaw
 
 # Or via npm for standalone use
-npm install payclaw
+npm install @grip-labs/payclaw
 ```
 
 ## Configure
@@ -144,7 +144,7 @@ This is a **v0.1 skunkworks release**. Production-grade compliance lives under t
 This package publishes only from the `onsari/payclaw-skill` GitHub repo via the release workflow in `.github/workflows/publish.yml`, using npm provenance attestation. Verification:
 
 ```bash
-npm view payclaw --json | jq .signatures
+npm view @grip-labs/payclaw --json | jq .signatures
 ```
 
 If the published version does not have a provenance signature from the GitHub Actions OIDC issuer pointing at this exact repo, **do not install it** — it wasn't us.
