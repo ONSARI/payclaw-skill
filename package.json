@@ -1,6 +1,6 @@
 {
   "name": "@grip-labs/payclaw",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Give your agent a wallet it can actually spend. USDC-native on Base L2. 1% flat, no KYC, no custody. Hardened: daily spending cap + EOA-only fee recipient + optional recipient whitelist + provenance attestation.",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,10 +28,10 @@
   "homepage": "https://grip.lat",
   "repository": {
     "type": "git",
-    "url": "https://github.com/onsari/payclaw-skill.git"
+    "url": "https://github.com/ONSARI/payclaw-skill.git"
   },
   "bugs": {
-    "url": "https://github.com/onsari/payclaw-skill/issues"
+    "url": "https://github.com/ONSARI/payclaw-skill/issues"
   },
   "keywords": [
     "openclaw",

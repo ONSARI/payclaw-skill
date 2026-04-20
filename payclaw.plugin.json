@@ -3,7 +3,7 @@
   "name": "PayClaw · Agent Payments",
   "description": "Give your agent a wallet it can actually spend. USDC-native on Base L2. 1% flat take rate, no monthly fees, no KYC, no custody of your funds. Three lines of integration: the skill auto-provisions an EOA per agent on first pay(), signs and settles transactions on-chain, and exposes balance + history as sub-skills.",
   "kind": "payments",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "onsari",
   "homepage": "https://grip.lat",
   "repository": "https://github.com/onsari/payclaw-skill",
