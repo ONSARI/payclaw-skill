@@ -1,0 +1,168 @@
+# PayClaw · Agent Payments skill
+
+> Give your agent a wallet it can actually spend.
+> USDC-native on Base. 1% flat, no fixed fees, no KYC, no custody.
+
+An [OpenClaw](https://openclaw.io) skill that gives autonomous agents the simplest possible way to send money. Three functions, auto-provisioned wallet, on-chain settlement.
+
+```js
+import { pay } from 'payclaw'
+
+await pay({
+  to:     '0xRecipient...',
+  amount: '1.50',
+})
+// → { txHash, amountSent: '1.50', feeCharged: '0.015', explorer: 'https://basescan.org/tx/...' }
+```
+
+## Why
+
+Agents are already transacting. Per Scroll's data, 140M stablecoin payments by AI agents in 9 months, average $0.31. Stripe Issuing's `0.2% + $0.20/tx` structurally cannot serve that market — the $0.20 fixed fee is 65% of the average agent tx.
+
+PayClaw is **1% flat, no fixed fee, no monthly minimum**. On a $0.31 tx, you pay $0.0031. On a $100 tx, you pay $1.00. Linear all the way down.
+
+## What it does
+
+| Function   | Purpose                                                                  |
+|------------|--------------------------------------------------------------------------|
+| `pay()`    | Send USDC from the agent's auto-provisioned wallet to any Base address  |
+| `balance()`| Check the agent's USDC + ETH balance                                     |
+| `history()`| List the agent's recent transactions (from on-chain logs)                |
+
+## What it does NOT do (yet)
+
+- KYC / identity verification — use [Grip Pay](https://grip.lat) for sovereign-anchored identity (RENAPER, TSE, etc)
+- Fiat on/off-ramp — USDC only
+- Multi-sig / spending-policy enforcement — use [wad](https://grip.lat/wad.html) SDK
+- Yield-bearing idle balances — coming in v0.2 with opt-in USDe/sUSDS
+- Agent-to-agent escrow with challenge — use `wad` SDK
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  OpenClaw agent                                                 │
+│  ───────────────                                                │
+│    calls:  pay({ to, amount })                                  │
+│    wallet: auto-provisioned EOA, private key encrypted locally  │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         │ signs USDC transfer
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  Base L2 · USDC native (Circle-issued, Coinbase ecosystem)      │
+│  ─────────                                                       │
+│    tx #1:  agent → recipient     (amount)                       │
+│    tx #2:  agent → PayClaw fee   (amount × 1%)                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Install
+
+```bash
+# In your OpenClaw workspace
+openclaw plugin add payclaw
+
+# Or via npm for standalone use
+npm install payclaw
+```
+
+## Configure
+
+Edit `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "payclaw": {
+        "enabled": true,
+        "config": {
+          "rpcUrl": "https://mainnet.base.org"
+        }
+      }
+    }
+  }
+}
+```
+
+Or set environment variables: `PAYCLAW_RPC_URL`, `PAYCLAW_USDC_ADDRESS`, `PAYCLAW_FEE_BPS`, etc.
+
+## First-run flow
+
+1. Agent calls `pay({ to, amount })` for the first time
+2. Skill generates a fresh secp256k1 EOA
+3. Encrypted keystore persisted at `~/.openclaw/agents/{agentId}/payclaw-wallet.json` (chmod 600)
+4. First call throws `WALLET_NEEDS_FUNDING` with the new address
+5. Fund the agent's address with USDC (+ a tiny bit of ETH for gas)
+6. All subsequent `pay()` calls settle in ~2 seconds on Base
+
+## Cost
+
+**1.00% flat take rate on the transferred USDC amount.** Zero subscription, zero monthly minimum, zero fixed per-tx fee. The fee is *additional* — the recipient gets the full amount, the agent's wallet is debited `amount × 1.01`.
+
+Gas: agent pays its own until a paymaster is wired up (v0.2).
+
+## Security notes
+
+### What we protect against
+
+- **Agent private keys** generated locally, encrypted with scrypt, persisted chmod 600, never transmitted off-host
+- **Recipient validation** — malformed addresses rejected before any RPC call
+- **Optional whitelist** — agents can be locked to a pre-approved set of payees (mitigates prompt-injection attacks that try to redirect a payment)
+- **Daily spending cap** — per-agent per-UTC-day limit (default $100). If a keystore is compromised, the attacker can't drain the whole balance in a single day. Trip-wire, not hard lock.
+- **Fee-recipient EOA check** — the skill verifies the configured `feeRecipient` is an EOA (not a contract) at runtime and refuses to proceed if it isn't. Defends against reentrancy + config-injection attacks.
+- **Dust guard** — payments below 0.01 USDC rejected to prevent griefing / state bloat
+- **All settlement on Base (public chain)** — every transaction is verifiable on BaseScan
+- **No custody** — PayClaw operators never hold agent funds. If we're hacked, the blast radius is *the treasury wallet only*, not user funds. Compare with centralized payment processors where a single breach drains every customer.
+- **No chargebacks / disputes / reversals** — on-chain finality
+
+### ⚠️ Threat model — what to know
+
+This is a **v0.1 skunkworks release**. Production-grade compliance lives under the [Grip Pay](https://grip.lat) brand with KYC + sovereign identity anchors, not here. The threats we explicitly acknowledge:
+
+| Threat | Mitigation today | Mitigation roadmap |
+|---|---|---|
+| **Keystore theft** (root access to agent host) | scrypt-encrypted keystore + chmod 600 + daily cap trip-wire | Hardware-backed keys (Ledger/HSM) in v0.2 |
+| **Supply-chain attack on npm package** | 2FA on publish account + GitHub provenance attestation | Release signing + SLSA level 3 |
+| **Phishing the developer** | Explicit warnings in docs + README | Community education + Discord rules |
+| **Prompt-injection redirecting payments** | Opt-in `recipientWhitelist` + `dailyCapUsdc` | On-chain spending policies via Grip identity (v0.4) |
+| **Malicious `feeRecipient` override** (reentrancy / fee theft) | Runtime EOA-only check + documented warning | Atomic settlement via PayClaw v2 smart contract |
+| **Fee bypass** (user sets `feeBps: 0`) | Accepted for self-hosted use | Smart-contract-enforced fee in v0.2 |
+
+**Do not** treat PayClaw v0.1 as enterprise-grade. For production flows above ~$10k/mo, wait for v0.2 or upgrade to Grip Pay.
+
+## Roadmap
+
+- **v0.1** (now): USDC on Base, flat 1%, local keystore, daily cap, whitelist opt-in, EOA-only fee recipient
+- **v0.2**: ERC-4337 paymaster (agents don't need ETH), atomic settlement via smart contract, hardware-wallet support (Ledger/HSM), USDe/sUSDS opt-in yield
+- **v0.3**: Cross-chain via CCTP (Arbitrum, Optimism, Polygon)
+- **v0.4**: Integration with [Grip identity layer](https://grip.lat) for sovereign-anchored KYC
+
+## Publishing discipline
+
+This package publishes only from the `onsari/payclaw-skill` GitHub repo via the release workflow in `.github/workflows/publish.yml`, using npm provenance attestation. Verification:
+
+```bash
+npm view payclaw --json | jq .signatures
+```
+
+If the published version does not have a provenance signature from the GitHub Actions OIDC issuer pointing at this exact repo, **do not install it** — it wasn't us.
+
+## Context
+
+PayClaw is a [Grip Labs](https://grip.lat) skunkworks product — the no-KYC lab where we validate agent-payment primitives fast. The production-grade stack with identity + compliance lives at:
+
+- **wad** — developer SDK for any EVM-native agent runtime
+- **Grip Pay** — consumer wallet with KYC + sovereign identity
+- **Grip** — the open MIT protocol underneath
+
+See [grip.lat](https://grip.lat) (passphrase-gated preview).
+
+## License
+
+MIT. Do what you want.
+
+---
+
+*Built for the ["ChatGPT Moment for Autonomous Agents"](https://www.youtube.com/watch?v=nvidia-openclaw-gtc-2026). Jensen Huang announced [OpenClaw + NemoClaw](https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-NemoClaw-for-the-OpenClaw-Community/default.aspx) at GTC 2026. PayClaw is the payments primitive on that stack.*

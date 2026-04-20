@@ -1,0 +1,66 @@
+{
+  "id": "payclaw",
+  "name": "PayClaw · Agent Payments",
+  "description": "Give your agent a wallet it can actually spend. USDC-native on Base L2. 1% flat take rate, no monthly fees, no KYC, no custody of your funds. Three lines of integration: the skill auto-provisions an EOA per agent on first pay(), signs and settles transactions on-chain, and exposes balance + history as sub-skills.",
+  "kind": "payments",
+  "version": "0.1.1",
+  "author": "onsari",
+  "homepage": "https://grip.lat",
+  "repository": "https://github.com/onsari/payclaw-skill",
+  "license": "MIT",
+  "skills": [
+    "skills/pay",
+    "skills/balance",
+    "skills/history"
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "rpcUrl": {
+        "type": "string",
+        "default": "https://mainnet.base.org",
+        "description": "EVM RPC URL. Defaults to Base mainnet. Override for Base Sepolia testnet: https://sepolia.base.org"
+      },
+      "usdcAddress": {
+        "type": "string",
+        "default": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "description": "USDC contract address. Default is Base mainnet native USDC (Circle-issued)."
+      },
+      "feeRecipient": {
+        "type": "string",
+        "default": "0xf5F069336bF2F35c628235cB20D9691284b61967",
+        "description": "PayClaw treasury EOA that receives the 1% take rate per settled transaction. MUST be an externally-owned account (EOA), not a contract — the skill validates this at runtime and refuses to pay into contracts (defense against reentrancy and config-injection attacks)."
+      },
+      "recipientWhitelist": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Optional array of 0x addresses the agent is allowed to pay. If set and non-empty, pay() rejects any recipient not in the list. Use this to mitigate prompt-injection attacks that try to redirect payments."
+      },
+      "dailyCapUsdc": {
+        "type": "number",
+        "default": 100,
+        "description": "Per-agent per-UTC-day spending cap in USDC. pay() is rejected if today's accumulated spend + this payment would exceed the cap. Protects against keystore compromise and runaway agents. Set to 0 to disable (NOT recommended)."
+      },
+      "spendLedgerStore": {
+        "type": "string",
+        "default": "~/.openclaw/agents/{agentId}/payclaw-spend-ledger.json",
+        "description": "Path template where the daily spend ledger is persisted per agent (chmod 600). {agentId} is substituted at runtime."
+      },
+      "feeBps": {
+        "type": "number",
+        "default": 100,
+        "description": "Take rate in basis points. Default 100 bps = 1.00%. Fee is in addition to the amount transferred to the recipient."
+      },
+      "walletStore": {
+        "type": "string",
+        "default": "~/.openclaw/agents/{agentId}/payclaw-wallet.json",
+        "description": "Path template where per-agent EOA keys are stored (encrypted with the agent's OpenClaw identity key). {agentId} is substituted at runtime."
+      },
+      "paymasterUrl": {
+        "type": "string",
+        "description": "Optional ERC-4337 paymaster URL that sponsors gas so the agent's wallet never needs ETH. Recommended for UX. If unset, the agent must hold a small ETH balance for gas."
+      }
+    }
+  }
+}

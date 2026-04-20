@@ -1,0 +1,46 @@
+name: Publish PayClaw to npm + ClawHub
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v0.1.1)'
+        required: true
+
+# Locks publish to this repo's GitHub Actions with OIDC-based npm provenance.
+# No secrets stored in the workflow — npm's provenance attestation uses
+# Sigstore to record the exact Actions run URL + commit SHA.
+#
+# Authorized publishers: only Le (onsari, repo owner) and Pi (Claude Code on
+# Le's host) can trigger a release via the GitHub UI. Any other PR merge
+# does NOT trigger a publish.
+
+permissions:
+  contents: read
+  id-token: write   # Required for npm provenance attestation via OIDC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Compile
+        run: npx tsc
+
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
