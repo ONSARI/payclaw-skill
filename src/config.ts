@@ -42,11 +42,11 @@ export interface PayClawConfig {
 export const DEFAULTS: PayClawConfig = {
   rpcUrl: 'https://mainnet.base.org',
   usdcAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC native on Base mainnet
-  // Default treasury = Grip Labs deployer EOA (same address used to deploy the
-  // Grip v2 contracts on Base Sepolia). NOT the PayClawVault v1 contract — an
-  // EOA is required so the skill's feeRecipient-EOA check passes. A dedicated
-  // multisig treasury will replace this in a future release.
-  feeRecipient: '0xf5F069336bF2F35c628235cB20D9691284b61967',
+  // Default treasury = dedicated PayClaw fee-recipient EOA on Base, held in a
+  // hardware wallet (Ledger), isolated from any other Grip Labs address and
+  // without prior on-chain history. Rotating here affects only where the 1%
+  // take rate is sent; override freely via config for forks.
+  feeRecipient: '0xba14744FfD57FA7d03b20D4c8BeDAaC301E865d1',
   feeBps: 100, // 1.00%
   walletStore: '~/.openclaw/agents/{agentId}/payclaw-wallet.json',
   dailyCapUsdc: 100, // $100/day default. Disable with 0.

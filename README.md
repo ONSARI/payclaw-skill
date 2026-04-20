@@ -91,8 +91,8 @@ Or set environment variables: `PAYCLAW_RPC_URL`, `PAYCLAW_USDC_ADDRESS`, `PAYCLA
 ## First-run flow
 
 1. Agent calls `pay({ to, amount })` for the first time
-2. Skill generates a fresh secp256k1 EOA
-3. Encrypted keystore persisted at `~/.openclaw/agents/{agentId}/payclaw-wallet.json` (chmod 600)
+2. Skill generates a fresh secp256k1 EOA for that agent
+3. Encrypted keystore is persisted on disk (path configurable via `walletStore`; defaults to an OpenClaw-managed location under the agent's private directory, chmod 600)
 4. First call throws `WALLET_NEEDS_FUNDING` with the new address
 5. Fund the agent's address with USDC (+ a tiny bit of ETH for gas)
 6. All subsequent `pay()` calls settle in ~2 seconds on Base
@@ -107,7 +107,7 @@ Gas: agent pays its own until a paymaster is wired up (v0.2).
 
 ### What we protect against
 
-- **Agent private keys** generated locally, encrypted with scrypt, persisted chmod 600, never transmitted off-host
+- **Agent private keys** generated locally, encrypted at rest, persisted with restrictive filesystem permissions, never transmitted off-host
 - **Recipient validation** — malformed addresses rejected before any RPC call
 - **Optional whitelist** — agents can be locked to a pre-approved set of payees (mitigates prompt-injection attacks that try to redirect a payment)
 - **Daily spending cap** — per-agent per-UTC-day limit (default $100). If a keystore is compromised, the attacker can't drain the whole balance in a single day. Trip-wire, not hard lock.

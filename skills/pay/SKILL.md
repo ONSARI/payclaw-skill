@@ -44,7 +44,7 @@ console.log(receipt)
 The first time the agent calls `pay()`, the skill:
 
 1. Generates a fresh EOA (secp256k1 keypair) for this agent
-2. Stores the encrypted private key under the path configured in `walletStore` (default: `~/.openclaw/agents/{agentId}/payclaw-wallet.json`)
+2. Persists the encrypted private key on disk at the path configured via `walletStore` (chmod 600, agent-scoped directory)
 3. Returns an error indicating the wallet needs funding, with the agent's new USDC address
 4. The human (or orchestrator) funds that address with USDC + a tiny amount of ETH for gas (unless a paymaster is configured)
 5. Subsequent `pay()` calls settle immediately
