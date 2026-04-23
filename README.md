@@ -74,9 +74,13 @@ pip install crewai-payclaw
 
 # Python — Microsoft AutoGen (0.4+)
 pip install autogen-payclaw
+
+# TypeScript — Vercel AI SDK (v5 / v6)
+npm i @grip-labs/payclaw-ai
 ```
 
-Official Python integration packages live under [`python/`](./python).
+Official integration packages live under [`python/`](./python) (LangChain,
+CrewAI, AutoGen) and [`payclaw-ai/`](./payclaw-ai) (Vercel AI SDK).
 
 ## Configure
 

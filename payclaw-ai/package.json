@@ -1,0 +1,60 @@
+{
+  "name": "@grip-labs/payclaw-ai",
+  "version": "0.1.0",
+  "description": "PayClaw tools for the Vercel AI SDK — give your agent a USDC wallet on Base it can actually spend. Gasless via Circle Paymaster. Works in Next.js Server Actions, API routes, edge runtime, and Node.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --import tsx test/*.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "ai": "^5.0.0 || ^6.0.0",
+    "zod": "^3.23.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "@ai-sdk/openai": "^3.0.0",
+    "@types/node": "^22.9.0",
+    "ai": "^6.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3",
+    "zod": "^3.25.0"
+  },
+  "license": "MIT",
+  "author": "onsari",
+  "homepage": "https://payclaw.me",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ONSARI/payclaw-skill.git",
+    "directory": "payclaw-ai"
+  },
+  "bugs": {
+    "url": "https://github.com/ONSARI/payclaw-skill/issues"
+  },
+  "keywords": [
+    "ai-sdk",
+    "vercel",
+    "vercel-ai",
+    "agent-payments",
+    "usdc",
+    "base",
+    "stablecoin",
+    "agentic",
+    "tools",
+    "nextjs",
+    "paymaster",
+    "erc-4337"
+  ]
+}

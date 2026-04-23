@@ -20,6 +20,7 @@ menu, and download a `.pkg` file, you have everything you need.
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
 3c. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen)](#3c-use-from-python-langchain--langgraph--crewai--autogen)
+3d. [Use from TypeScript (Vercel AI SDK)](#3d-use-from-typescript-vercel-ai-sdk)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
 6. [Make your first payment](#6-make-your-first-payment)
@@ -318,6 +319,42 @@ treasurer = Agent(
 
 See [`python/crewai-payclaw/README.md`](./python/crewai-payclaw/README.md) for
 multi-agent crew examples.
+
+---
+
+## 3d. Use from TypeScript (Vercel AI SDK)
+
+If you're building with **Next.js, Bun, Deno, or any Node script**, install
+the official Vercel AI SDK package — works in Server Actions, API routes,
+edge runtime, and Cloudflare Workers (uses native `fetch`, no extra runtime
+dependencies).
+
+```bash
+npm i @grip-labs/payclaw-ai ai zod
+# or: pnpm add @grip-labs/payclaw-ai ai zod
+```
+
+```ts
+import { generateText } from 'ai'
+import { openai } from '@ai-sdk/openai'
+import { createPayClawTools } from '@grip-labs/payclaw-ai'
+
+process.env.PAYCLAW_API_TOKEN = '...'  // request via https://payclaw.me
+
+const payclaw = createPayClawTools()
+
+const { text } = await generateText({
+  model: openai('gpt-4o-mini'),
+  prompt: "What's my USDC balance?",
+  tools: { ...payclaw },
+})
+```
+
+Three tools (`payclaw_get_balance`, `payclaw_pay`, `payclaw_get_history`),
+Zod schemas, full TypeScript types, works with `generateText`, `streamText`,
+`useChat`, and any LLM provider supported by the Vercel AI SDK. See
+[`payclaw-ai/README.md`](./payclaw-ai/README.md) for Next.js App Router
+examples and streaming patterns.
 
 ---
 
