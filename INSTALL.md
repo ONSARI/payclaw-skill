@@ -64,6 +64,7 @@ by every dev tool in the world. Without it, no AI client can run PayClaw.
 You're done with the one-time setup. Pick the AI client you use:
 
 - I use **Claude Desktop** → [go to step 2](#2-install-on-claude-desktop)
+- I use **Claude Code (CLI)** → [go to step 2b](#2b-install-on-claude-code-cli)
 - I use **Codex Desktop** → [go to step 3](#3-install-on-codex-desktop)
 - I use **OpenClaw** (Bia's runtime) → [go to step 3b](#3b-install-on-openclaw)
 
@@ -141,6 +142,38 @@ This step is critical. Don't skip.
 3. Reopen Claude Desktop from the Dock or Applications folder.
 4. Click **New chat** (don't continue an old one — old chats don't see
    the new tools).
+
+[Skip to step 4 to test it](#4-test-that-it-works).
+
+---
+
+## 2b. Install on Claude Code (CLI)
+
+[Claude Code](https://docs.claude.com/en/docs/claude-code) is Anthropic's
+command-line agent. One command installs PayClaw permanently across all
+your sessions.
+
+1. Open the **Terminal**.
+2. Run:
+
+   ```
+   claude mcp add -s user payclaw -e PAYCLAW_AGENT_ID=claude-code-default -- /opt/homebrew/bin/npx -y @grip-labs/payclaw-mcp
+   ```
+
+   On Intel Macs, replace `/opt/homebrew/bin/npx` with `/usr/local/bin/npx`
+   (use whatever `which npx` returned in [step 1](#1-before-you-start)).
+
+3. Verify:
+
+   ```
+   claude mcp list | grep payclaw
+   ```
+
+   You should see `payclaw: ... - ✓ Connected`.
+
+The `-s user` flag scopes the install **globally** — every Claude Code
+session you start (in any directory, after any restart) will have PayClaw
+loaded automatically. No per-project config needed.
 
 [Skip to step 4 to test it](#4-test-that-it-works).
 
