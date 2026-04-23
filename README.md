@@ -71,11 +71,12 @@ pip install langchain-payclaw
 
 # Python — CrewAI
 pip install crewai-payclaw
+
+# Python — Microsoft AutoGen (0.4+)
+pip install autogen-payclaw
 ```
 
-See [`python/langchain-payclaw/`](./python/langchain-payclaw) and
-[`python/crewai-payclaw/`](./python/crewai-payclaw) for the official Python
-integration packages.
+Official Python integration packages live under [`python/`](./python).
 
 ## Configure
 

@@ -19,7 +19,7 @@ menu, and download a `.pkg` file, you have everything you need.
 1. [Before you start (5 minutes, do this once)](#1-before-you-start)
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
-3c. [Use from Python (LangChain / LangGraph / CrewAI)](#3c-use-from-python-langchain--langgraph--crewai)
+3c. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen)](#3c-use-from-python-langchain--langgraph--crewai--autogen)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
 6. [Make your first payment](#6-make-your-first-payment)
@@ -262,7 +262,7 @@ to edit by hand.
 
 ---
 
-## 3c. Use from Python (LangChain / LangGraph / CrewAI)
+## 3c. Use from Python (LangChain / LangGraph / CrewAI / AutoGen)
 
 If you're building a Python agent, install the official package for your
 framework — no MCP setup required, just an API token.
@@ -273,6 +273,9 @@ pip install langchain-payclaw
 
 # CrewAI
 pip install crewai-payclaw
+
+# Microsoft AutoGen (0.4+)
+pip install autogen-payclaw
 ```
 
 ```python
