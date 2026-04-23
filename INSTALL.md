@@ -20,7 +20,7 @@ menu, and download a `.pkg` file, you have everything you need.
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
 3c. [Install on Cline (VS Code)](#3c-install-on-cline-vs-code)
-3d. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen)](#3d-use-from-python-langchain--langgraph--crewai--autogen)
+3d. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen / LlamaIndex)](#3d-use-from-python-langchain--langgraph--crewai--autogen--llamaindex)
 3e. [Use from TypeScript (Vercel AI SDK)](#3e-use-from-typescript-vercel-ai-sdk)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
@@ -308,7 +308,7 @@ with Claude Desktop works in Cline with no changes.
 
 ---
 
-## 3d. Use from Python (LangChain / LangGraph / CrewAI / AutoGen)
+## 3d. Use from Python (LangChain / LangGraph / CrewAI / AutoGen / LlamaIndex)
 
 If you're building a Python agent, install the official package for your
 framework — no MCP setup required, just an API token.
@@ -322,6 +322,9 @@ pip install crewai-payclaw
 
 # Microsoft AutoGen (0.4+)
 pip install autogen-payclaw
+
+# LlamaIndex (0.12+)
+pip install llama-index-tools-payclaw
 ```
 
 ```python

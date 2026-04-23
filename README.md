@@ -75,12 +75,15 @@ pip install crewai-payclaw
 # Python — Microsoft AutoGen (0.4+)
 pip install autogen-payclaw
 
+# Python — LlamaIndex (0.12+)
+pip install llama-index-tools-payclaw
+
 # TypeScript — Vercel AI SDK (v5 / v6)
 npm i @grip-labs/payclaw-ai
 ```
 
 Official integration packages live under [`python/`](./python) (LangChain,
-CrewAI, AutoGen) and [`payclaw-ai/`](./payclaw-ai) (Vercel AI SDK).
+CrewAI, AutoGen, LlamaIndex) and [`payclaw-ai/`](./payclaw-ai) (Vercel AI SDK).
 
 ## Configure
 
