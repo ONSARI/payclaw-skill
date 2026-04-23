@@ -19,7 +19,7 @@ menu, and download a `.pkg` file, you have everything you need.
 1. [Before you start (5 minutes, do this once)](#1-before-you-start)
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
-3c. [Install on Cline (VS Code)](#3c-install-on-cline-vs-code)
+3c. [Install on Cline / Continue.dev (VS Code MCP-native IDEs)](#3c-install-on-cline--continuedev-vs-code-mcp-native-ides)
 3d. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen / LlamaIndex)](#3d-use-from-python-langchain--langgraph--crewai--autogen--llamaindex)
 3e. [Use from TypeScript (Vercel AI SDK)](#3e-use-from-typescript-vercel-ai-sdk)
 4. [Test that it works](#4-test-that-it-works)
@@ -264,11 +264,14 @@ to edit by hand.
 
 ---
 
-## 3c. Install on Cline (VS Code)
+## 3c. Install on Cline / Continue.dev (VS Code MCP-native IDEs)
 
-[Cline](https://cline.bot) is the open-source AI coding agent for VS Code.
-It speaks MCP natively, so the same `@grip-labs/payclaw-mcp` server you use
-with Claude Desktop works in Cline with no changes.
+Both [Cline](https://cline.bot) (open-source AI coding agent) and
+[Continue.dev](https://continue.dev) (open-source AI assistant for VS Code +
+JetBrains) speak MCP natively, so the same `@grip-labs/payclaw-mcp` server
+works in either with no code changes.
+
+### Cline
 
 1. Install the **Cline** extension from the VS Code Marketplace if you don't
    have it already.
@@ -303,6 +306,37 @@ with Claude Desktop works in Cline with no changes.
 > macOS launches with a minimal `PATH`. If `which npx` returns a different
 > path on your machine (e.g. `/opt/homebrew/bin/npx` on Apple Silicon, or an
 > nvm path), use that instead.
+
+### Continue.dev
+
+Continue uses **YAML** (not JSON) and `mcpServers` is a **list**, not an
+object — easy to mix up if you're coming from Claude Desktop.
+
+1. Install the **Continue** extension (VS Code Marketplace or JetBrains
+   Plugins). Open it once so it creates `~/.continue/config.yaml`.
+2. Open the file (`code ~/.continue/config.yaml` or use the gear icon →
+   "Open config.yaml" inside the Continue panel).
+3. Add the `payclaw` entry under `mcpServers`. If you already have an
+   `mcpServers:` block, add `payclaw` as another list item:
+
+   ```yaml
+   name: My Assistant
+   version: 1.0.0
+   schema: v1
+   mcpServers:
+     - name: payclaw
+       command: /usr/local/bin/npx
+       args:
+         - "-y"
+         - "@grip-labs/payclaw-mcp"
+       env:
+         PAYCLAW_AGENT_ID: continue-default
+   ```
+
+4. Save. Continue picks up MCP changes automatically — no IDE reload needed
+   in most cases. If the tools don't appear, restart the IDE.
+5. In a new Continue chat, ask: *"Use the payclaw_balance tool to show my
+   agent wallet."*
 
 [Skip to step 4 to test it](#4-test-that-it-works).
 

@@ -130,6 +130,30 @@ In Cline settings → MCP Servers → Edit MCP Settings:
 }
 ```
 
+## Add to Continue.dev (VS Code + JetBrains)
+
+Continue uses **YAML** (not JSON) and `mcpServers` is a **list**, not an
+object. Edit `~/.continue/config.yaml` (created on first launch):
+
+```yaml
+name: My Assistant
+version: 1.0.0
+schema: v1
+mcpServers:
+  - name: payclaw
+    command: /usr/local/bin/npx
+    args:
+      - "-y"
+      - "@grip-labs/payclaw-mcp"
+    env:
+      PAYCLAW_AGENT_ID: continue-default
+```
+
+If you already have an `mcpServers:` block, add the `payclaw` entry as another
+list item (with the leading `-`). Save the file — Continue picks up MCP
+config changes without an IDE reload in most cases. If the tools don't
+appear, restart the IDE.
+
 ## Add to Zed
 
 Zed reads MCP servers from your settings (`~/.config/zed/settings.json`):
