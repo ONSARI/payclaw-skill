@@ -19,7 +19,7 @@ menu, and download a `.pkg` file, you have everything you need.
 1. [Before you start (5 minutes, do this once)](#1-before-you-start)
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
-3c. [Use from Python (LangChain / LangGraph)](#3c-use-from-python-langchain--langgraph)
+3c. [Use from Python (LangChain / LangGraph / CrewAI)](#3c-use-from-python-langchain--langgraph--crewai)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
 6. [Make your first payment](#6-make-your-first-payment)
@@ -262,13 +262,17 @@ to edit by hand.
 
 ---
 
-## 3c. Use from Python (LangChain / LangGraph)
+## 3c. Use from Python (LangChain / LangGraph / CrewAI)
 
-If you're building a Python agent with LangChain or LangGraph, install the
-official package — no MCP setup required, just an API token.
+If you're building a Python agent, install the official package for your
+framework — no MCP setup required, just an API token.
 
 ```bash
+# LangChain / LangGraph
 pip install langchain-payclaw
+
+# CrewAI
+pip install crewai-payclaw
 ```
 
 ```python
@@ -293,6 +297,24 @@ Three tools (`Balance`, `Pay`, `History`), sync + async, full Pydantic schemas,
 works with any LangChain-compatible model. See
 [`python/langchain-payclaw/README.md`](./python/langchain-payclaw/README.md) for
 details, examples, and async patterns.
+
+For CrewAI, the same three tools are exposed via `crewai_payclaw` and plug
+straight into an `Agent`'s `tools=[]`:
+
+```python
+from crewai import Agent, Crew, Task
+from crewai_payclaw import PayClawBalanceTool, PayClawPayTool, PayClawHistoryTool
+
+treasurer = Agent(
+    role="Treasurer",
+    goal="Pay vendors on time, in full, on-chain.",
+    backstory="Manages the crew's USDC wallet on Base.",
+    tools=[PayClawBalanceTool(), PayClawPayTool(), PayClawHistoryTool()],
+)
+```
+
+See [`python/crewai-payclaw/README.md`](./python/crewai-payclaw/README.md) for
+multi-agent crew examples.
 
 ---
 
