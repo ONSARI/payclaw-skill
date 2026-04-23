@@ -19,6 +19,7 @@ menu, and download a `.pkg` file, you have everything you need.
 1. [Before you start (5 minutes, do this once)](#1-before-you-start)
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
+3c. [Use from Python (LangChain / LangGraph)](#3c-use-from-python-langchain--langgraph)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
 6. [Make your first payment](#6-make-your-first-payment)
@@ -258,6 +259,40 @@ to edit by hand.
    All fields are optional — defaults apply if you skip this step.
 
 [Skip to step 4 to test it](#4-test-that-it-works).
+
+---
+
+## 3c. Use from Python (LangChain / LangGraph)
+
+If you're building a Python agent with LangChain or LangGraph, install the
+official package — no MCP setup required, just an API token.
+
+```bash
+pip install langchain-payclaw
+```
+
+```python
+from langchain_payclaw import PayClawBalanceTool, PayClawPayTool, PayClawHistoryTool
+from langgraph.prebuilt import create_react_agent
+from langchain_openai import ChatOpenAI
+
+import os
+os.environ["PAYCLAW_API_TOKEN"] = "..."  # request via https://payclaw.me
+
+agent = create_react_agent(
+    model=ChatOpenAI(model="gpt-4o-mini"),
+    tools=[PayClawBalanceTool(), PayClawPayTool(), PayClawHistoryTool()],
+)
+
+result = agent.invoke({"messages": [
+    ("user", "Check my balance, then send 0.05 USDC to 0x000000000000000000000000000000000000dEaD."),
+]})
+```
+
+Three tools (`Balance`, `Pay`, `History`), sync + async, full Pydantic schemas,
+works with any LangChain-compatible model. See
+[`python/langchain-payclaw/README.md`](./python/langchain-payclaw/README.md) for
+details, examples, and async patterns.
 
 ---
 

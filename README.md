@@ -65,7 +65,12 @@ openclaw plugin add @grip-labs/payclaw
 
 # Or via npm for standalone use
 npm install @grip-labs/payclaw
+
+# Python (LangChain / LangGraph agents)
+pip install langchain-payclaw
 ```
+
+See [`python/langchain-payclaw/`](./python/langchain-payclaw) for the LangChain integration package.
 
 ## Configure
 
