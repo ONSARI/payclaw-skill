@@ -5,7 +5,7 @@ description: Check the current USDC balance of the agent's PayClaw wallet on Bas
 
 # PayClaw · balance
 
-Check how much USDC (and ETH for gas) the agent currently holds.
+Check how much USDC the agent currently holds. (v0.2 is gasless via Circle Paymaster — the wallet never needs ETH.)
 
 ## Usage
 
@@ -18,7 +18,7 @@ console.log(b)
 //   address: '0xAgentWallet...',
 //   usdc:    '42.50',          // human-readable decimal
 //   usdcRaw: '42500000',       // 6-decimal raw units
-//   eth:     '0.0008',         // for gas (null if paymaster configured)
+//   eth:     '0.0',            // always 0 in v0.2 (gas paid in USDC via paymaster)
 //   chain:   'base-mainnet',
 //   explorer: 'https://basescan.org/address/0xAgentWallet...'
 // }

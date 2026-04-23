@@ -94,14 +94,14 @@ Or set environment variables: `PAYCLAW_RPC_URL`, `PAYCLAW_USDC_ADDRESS`, `PAYCLA
 2. Skill generates a fresh secp256k1 EOA for that agent
 3. Encrypted keystore is persisted on disk (path configurable via `walletStore`; defaults to an OpenClaw-managed location under the agent's private directory, chmod 600)
 4. First call throws `WALLET_NEEDS_FUNDING` with the new address
-5. Fund the agent's address with USDC (+ a tiny bit of ETH for gas)
+5. Fund the agent's address with USDC — that's it. Gas is paid in USDC via Circle Paymaster, no ETH required.
 6. All subsequent `pay()` calls settle in ~2 seconds on Base
 
 ## Cost
 
 **1.00% flat take rate on the transferred USDC amount.** Zero subscription, zero monthly minimum, zero fixed per-tx fee. The fee is *additional* — the recipient gets the full amount, the agent's wallet is debited `amount × 1.01`.
 
-Gas: agent pays its own until a paymaster is wired up (v0.2).
+Gas: paid in USDC by the agent's smart account via Circle Paymaster (~$0.001/payment surcharge). The agent never holds or needs ETH.
 
 ## Security notes
 
@@ -110,33 +110,29 @@ Gas: agent pays its own until a paymaster is wired up (v0.2).
 - **Agent private keys** generated locally, encrypted at rest, persisted with restrictive filesystem permissions, never transmitted off-host
 - **Recipient validation** — malformed addresses rejected before any RPC call
 - **Optional whitelist** — agents can be locked to a pre-approved set of payees (mitigates prompt-injection attacks that try to redirect a payment)
-- **Daily spending cap** — per-agent per-UTC-day limit (default $100). If a keystore is compromised, the attacker can't drain the whole balance in a single day. Trip-wire, not hard lock.
+- **Daily spending cap** — per-agent per-UTC-day limit (default $100), bounding worst-case loss if a keystore is ever compromised
 - **Fee-recipient EOA check** — the skill verifies the configured `feeRecipient` is an EOA (not a contract) at runtime and refuses to proceed if it isn't. Defends against reentrancy + config-injection attacks.
 - **Dust guard** — payments below 0.01 USDC rejected to prevent griefing / state bloat
 - **All settlement on Base (public chain)** — every transaction is verifiable on BaseScan
 - **No custody** — PayClaw operators never hold agent funds. If we're hacked, the blast radius is *the treasury wallet only*, not user funds. Compare with centralized payment processors where a single breach drains every customer.
 - **No chargebacks / disputes / reversals** — on-chain finality
 
-### ⚠️ Threat model — what to know
+### Defense in depth
 
-This is a **v0.1 skunkworks release**. Production-grade compliance lives under the [Grip Pay](https://grip.lat) brand with KYC + sovereign identity anchors, not here. The threats we explicitly acknowledge:
+PayClaw layers protections across the SDK, the hosted deployer endpoint, and the on-chain settlement path:
 
-| Threat | Mitigation today | Mitigation roadmap |
-|---|---|---|
-| **Keystore theft** (root access to agent host) | scrypt-encrypted keystore + chmod 600 + daily cap trip-wire | Hardware-backed keys (Ledger/HSM) in v0.2 |
-| **Supply-chain attack on npm package** | 2FA on publish account + GitHub provenance attestation | Release signing + SLSA level 3 |
-| **Phishing the developer** | Explicit warnings in docs + README | Community education + Discord rules |
-| **Prompt-injection redirecting payments** | Opt-in `recipientWhitelist` + `dailyCapUsdc` | On-chain spending policies via Grip identity (v0.4) |
-| **Malicious `feeRecipient` override** (reentrancy / fee theft) | Runtime EOA-only check + documented warning | Atomic settlement via PayClaw v2 smart contract |
-| **Fee bypass** (user sets `feeBps: 0`) | Accepted for self-hosted use | Smart-contract-enforced fee in v0.2 |
+- **SDK layer** — encrypted local keystore, daily spending cap, optional recipient whitelist, EOA-only fee recipient validation, dust-payment rejection, recipient-address validation
+- **Hosted deployer endpoint** — kill switch, body shape + timestamp freshness validation, ECDSA signature verification (caller proves EOA ownership), idempotency on already-deployed accounts, USDC-funded-wallet bypass for legitimate customers, persistent rate limiting on empty-wallet creation, factory simulation pre-flight (refuses to spend gas unless the factory deploys at the claimed address)
+- **On-chain layer** — atomic ERC-4337 v0.7 UserOps via Pimlico bundler, Circle Paymaster v0.7 for USDC-denominated gas, Kernel v0.3.1 smart accounts with ERC-1271 signature verification, Base mainnet finality (~2s)
+- **Distribution layer** — npm provenance attestation on every published version, GitHub OIDC signing, public release pipeline auditable in `.github/workflows/`
 
-**Do not** treat PayClaw v0.1 as enterprise-grade. For production flows above ~$10k/mo, wait for v0.2 or upgrade to Grip Pay.
+For production flows that need KYC, sovereign identity anchors, or compliance reporting, pair PayClaw with [Grip Pay](https://grip.lat) — the regulated layer of the Grip stack.
 
 ## Roadmap
 
-- **v0.1** (now): USDC on Base, flat 1%, local keystore, daily cap, whitelist opt-in, EOA-only fee recipient
-- **v0.2**: ERC-4337 paymaster (agents don't need ETH), atomic settlement via smart contract, hardware-wallet support (Ledger/HSM), USDe/sUSDS opt-in yield
-- **v0.3**: Cross-chain via CCTP (Arbitrum, Optimism, Polygon)
+- **v0.1** (shipped): USDC on Base, flat 1%, local keystore, daily cap, whitelist opt-in, EOA-only fee recipient
+- **v0.2** (shipped, current): True gasless via Circle Paymaster + Kernel smart accounts (ERC-4337 v0.7) — agents never need ETH. Hosted deployer endpoint with multi-layer defenses (sig verification, factory simulation, USDC-funded bypass, anti-spam rate limit).
+- **v0.3** (planned): Cross-chain via CCTP (Arbitrum, Optimism, Polygon), hardware-wallet support (Ledger/HSM), USDe/sUSDS opt-in yield
 - **v0.4**: Integration with [Grip identity layer](https://grip.lat) for sovereign-anchored KYC
 
 ## Publishing discipline
@@ -151,7 +147,7 @@ If the published version does not have a provenance signature from the GitHub Ac
 
 ## Context
 
-PayClaw is a [Grip Labs](https://grip.lat) skunkworks product — the no-KYC lab where we validate agent-payment primitives fast. The production-grade stack with identity + compliance lives at:
+PayClaw is built by [Grip Labs](https://grip.lat) — the agent-payments primitive that pairs with the broader Grip stack:
 
 - **wad** — developer SDK for any EVM-native agent runtime
 - **Grip Pay** — consumer wallet with KYC + sovereign identity

@@ -46,15 +46,15 @@ The first time the agent calls `pay()`, the skill:
 1. Generates a fresh EOA (secp256k1 keypair) for this agent
 2. Persists the encrypted private key on disk at the path configured via `walletStore` (chmod 600, agent-scoped directory)
 3. Returns an error indicating the wallet needs funding, with the agent's new USDC address
-4. The human (or orchestrator) funds that address with USDC + a tiny amount of ETH for gas (unless a paymaster is configured)
-5. Subsequent `pay()` calls settle immediately
+4. The human (or orchestrator) funds that address with USDC. v0.2 is gasless via Circle Paymaster — no ETH required.
+5. Subsequent `pay()` calls settle in ~2 seconds
 
 ## Error modes
 
 | Error code                | Meaning                                                                             | Resolution                                                               |
 |---------------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
 | `WALLET_NEEDS_FUNDING`    | No USDC balance in the agent's wallet yet                                           | Fund the returned address with USDC                                      |
-| `INSUFFICIENT_GAS`        | Wallet has USDC but no ETH for gas and no paymaster configured                      | Send ~0.0005 ETH to the wallet, or configure `paymasterUrl`              |
+| `INSUFFICIENT_GAS`        | Legacy mode only (paymaster disabled): wallet has USDC but no ETH for gas           | Either send ~0.0005 ETH to the wallet, or re-enable paymaster (default)  |
 | `INVALID_RECIPIENT`       | `to` is not a valid 0x-prefixed address                                             | Verify the recipient string                                              |
 | `AMOUNT_BELOW_DUST`       | `amount < 0.01 USDC` — rejected to avoid griefing                                   | Raise the amount                                                         |
 | `RPC_ERROR`               | Base RPC not responding                                                             | Retry; if persistent, switch `rpcUrl` to an alternate Base provider      |

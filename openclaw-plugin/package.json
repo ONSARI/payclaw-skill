@@ -1,0 +1,45 @@
+{
+  "name": "@grip-labs/payclaw-openclaw",
+  "version": "0.2.4",
+  "description": "PayClaw as a native OpenClaw plugin. Registers payclaw_pay / payclaw_balance / payclaw_history as OpenClaw tools, wrapping the @grip-labs/payclaw SDK so any OpenClaw agent can move USDC on Base mainnet. v0.2: true gasless via Circle Paymaster + Kernel smart accounts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@grip-labs/payclaw": "^0.2.3",
+    "@sinclair/typebox": "^0.34.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "openclaw": "^2026.4.15",
+    "typescript": "^5.6.3"
+  },
+  "license": "MIT",
+  "author": "onsari",
+  "homepage": "https://payclaw.me",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ONSARI/payclaw-skill.git",
+    "directory": "openclaw-plugin"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "payclaw",
+    "agent-payments",
+    "usdc",
+    "base"
+  ]
+}

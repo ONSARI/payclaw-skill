@@ -1,0 +1,51 @@
+{
+  "name": "@grip-labs/payclaw-mcp",
+  "version": "0.2.5",
+  "description": "PayClaw as an MCP server. Adds pay/balance/history tools to Claude Desktop, Cursor, Cline, and any MCP-compatible client. v0.2: true gasless via Circle Paymaster + Kernel smart accounts on Base — agents never need ETH. Wraps @grip-labs/payclaw.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "payclaw-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && chmod 755 dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@grip-labs/payclaw": "^0.2.4",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  },
+  "license": "MIT",
+  "author": "onsari",
+  "homepage": "https://payclaw.me",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ONSARI/payclaw-skill.git",
+    "directory": "mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/ONSARI/payclaw-skill/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "payclaw",
+    "agent-payments",
+    "usdc",
+    "base",
+    "stablecoin",
+    "claude",
+    "cursor",
+    "cline"
+  ]
+}
