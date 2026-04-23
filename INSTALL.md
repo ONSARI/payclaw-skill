@@ -19,8 +19,9 @@ menu, and download a `.pkg` file, you have everything you need.
 1. [Before you start (5 minutes, do this once)](#1-before-you-start)
 2. [Install on Claude Desktop](#2-install-on-claude-desktop)
 3. [Install on Codex Desktop](#3-install-on-codex-desktop)
-3c. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen)](#3c-use-from-python-langchain--langgraph--crewai--autogen)
-3d. [Use from TypeScript (Vercel AI SDK)](#3d-use-from-typescript-vercel-ai-sdk)
+3c. [Install on Cline (VS Code)](#3c-install-on-cline-vs-code)
+3d. [Use from Python (LangChain / LangGraph / CrewAI / AutoGen)](#3d-use-from-python-langchain--langgraph--crewai--autogen)
+3e. [Use from TypeScript (Vercel AI SDK)](#3e-use-from-typescript-vercel-ai-sdk)
 4. [Test that it works](#4-test-that-it-works)
 5. [Add money to your wallet (fund it)](#5-add-money-to-your-wallet)
 6. [Make your first payment](#6-make-your-first-payment)
@@ -263,7 +264,51 @@ to edit by hand.
 
 ---
 
-## 3c. Use from Python (LangChain / LangGraph / CrewAI / AutoGen)
+## 3c. Install on Cline (VS Code)
+
+[Cline](https://cline.bot) is the open-source AI coding agent for VS Code.
+It speaks MCP natively, so the same `@grip-labs/payclaw-mcp` server you use
+with Claude Desktop works in Cline with no changes.
+
+1. Install the **Cline** extension from the VS Code Marketplace if you don't
+   have it already.
+2. Open the Cline panel (sidebar icon or `Cmd/Ctrl+Shift+P` → "Cline: Open").
+3. Click the **MCP Servers** tab → **Edit MCP Settings** (top-right).
+4. Add the `payclaw` block to the JSON file Cline opens for you:
+
+   ```json
+   {
+     "mcpServers": {
+       "payclaw": {
+         "command": "/usr/local/bin/npx",
+         "args": ["-y", "@grip-labs/payclaw-mcp"],
+         "env": {
+           "PAYCLAW_AGENT_ID": "cline-default"
+         }
+       }
+     }
+   }
+   ```
+
+   If you already have other MCP servers configured, add `payclaw` as a sibling
+   inside the existing `mcpServers` object.
+
+5. Save the file. Cline picks the change up automatically — no extension
+   reload needed in most cases. If the tools don't appear, click the refresh
+   icon next to the `payclaw` entry in the MCP Servers tab.
+6. In a new Cline conversation, ask: *"Use the payclaw_balance tool to show
+   my agent wallet."*
+
+> **Why `/usr/local/bin/npx`?** Same reason as Claude Desktop — VS Code on
+> macOS launches with a minimal `PATH`. If `which npx` returns a different
+> path on your machine (e.g. `/opt/homebrew/bin/npx` on Apple Silicon, or an
+> nvm path), use that instead.
+
+[Skip to step 4 to test it](#4-test-that-it-works).
+
+---
+
+## 3d. Use from Python (LangChain / LangGraph / CrewAI / AutoGen)
 
 If you're building a Python agent, install the official package for your
 framework — no MCP setup required, just an API token.
@@ -322,7 +367,7 @@ multi-agent crew examples.
 
 ---
 
-## 3d. Use from TypeScript (Vercel AI SDK)
+## 3e. Use from TypeScript (Vercel AI SDK)
 
 If you're building with **Next.js, Bun, Deno, or any Node script**, install
 the official Vercel AI SDK package — works in Server Actions, API routes,
