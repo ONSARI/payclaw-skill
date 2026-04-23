@@ -95,7 +95,7 @@ args = ["-y", "@grip-labs/payclaw-mcp"]
 PAYCLAW_AGENT_ID = "codex-default"
 ```
 
-## Add to Cursor
+## Add to Cursor (IDE + CLI)
 
 Edit `~/.cursor/mcp.json`:
 
@@ -110,6 +110,9 @@ Edit `~/.cursor/mcp.json`:
   }
 }
 ```
+
+The same file is read by both **Cursor IDE** and **Cursor CLI**
+(`cursor-agent`) — one config covers both.
 
 ## Add to Cline (VS Code)
 
