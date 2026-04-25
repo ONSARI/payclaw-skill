@@ -1,5 +1,15 @@
 # PayClaw · Agent Payments skill
 
+> [!IMPORTANT]
+> **PayClaw has consolidated under [Grip](https://github.com/grip-foundation).**
+>
+> The agent-payment work continues under a clearer brand, same protocol underneath.
+> - Protocol: **[grip-foundation/protocol](https://github.com/grip-foundation/protocol)** (MIT, contracts live on Base mainnet)
+> - Consumer surface: **[gripagent.io](https://gripagent.io)**
+> - This repo is **archived** as of 2026-04-25. History preserved for reference; new work happens in `grip-foundation/protocol`.
+
+---
+
 > Give your agent a wallet it can actually spend.
 > USDC-native on Base. 1% flat, no fixed fees, no KYC, no custody.
 
